@@ -20,10 +20,11 @@ public class SimpleServer {
 	public static void main(String[] args) throws IOException {
 		ServerSocket ss = new ServerSocket(PORT);
 		System.out.println("ServerSocket created");
+		System.out.println("Waiting for client connection on port " + PORT);
 		while (true) {
-			System.out.println("Waiting for client connection on port " + PORT);
+			
 			Socket cs = ss.accept();
-			System.out.println("Client connected");
+			//System.out.println("Client connected");
 
 			BufferedReader r = new BufferedReader(new InputStreamReader(
 					cs.getInputStream()));
@@ -35,7 +36,7 @@ public class SimpleServer {
 				out.println(line);
 				
 			}
-			System.out.println("Client disconnected");
+			//System.out.println("Client disconnected");
 			r.close();
 		}
 		

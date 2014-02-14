@@ -20,15 +20,23 @@ public class MTServer {
 	public static void main(String[] args) throws IOException {
 		ServerSocket ss = new ServerSocket(PORT);
 		System.out.println("ServerSocket created");
+		System.out.println("Waiting for client connection on port " + PORT);
 		while (true) {
-			System.out.println("Waiting for client connection on port " + PORT);
+			
 			Socket cs = ss.accept();
-			System.out.println("Server Thread Spawning");
+			//ystem.out.println("Server Thread Spawning");
 			new ServerThread(cs).start();
 			
 		}
 	}
 	
+	/**
+	 * Run method handles server calls.
+	 * Must be givena  socket to be initialized to.
+	 * 
+	 * @author Ian Mundy
+	 *
+	 */
 	private static class ServerThread extends Thread{
 		
 		Socket socket_;
@@ -49,7 +57,7 @@ public class MTServer {
 					out.println(line);
 					
 				}
-				System.out.println("Client disconnected");
+				//System.out.println("Client disconnected");
 				r.close();
 			}catch(IOException e){
 				e.printStackTrace();

@@ -35,12 +35,14 @@ public class BenchmarkClient {
 	 */
 	public static long serialServer() throws UnknownHostException, IOException{
 		long startTime = System.nanoTime();
+		Socket s = new Socket("localhost", 8888);
+		PrintStream ps = new PrintStream(s.getOutputStream());
 		for(int i = 0; i <= 1000; i++){	
-			Socket s = new Socket("localhost", 8888);
+			
 			//System.out.println("Client is connected to the server");
 			
 			//Send the string to the server
-			PrintStream ps = new PrintStream(s.getOutputStream());
+			
 			ps.println("caps lock is cruise control for cool.");
 			
 			//read back response
@@ -51,8 +53,9 @@ public class BenchmarkClient {
 			System.out.println(line);
 				
 			
-			ps.close();
+			
 		}
+		ps.close();
 		long endTime = System.nanoTime();
 		return (endTime - startTime);
 	}
@@ -60,6 +63,7 @@ public class BenchmarkClient {
 	
 	/**
 	 * Runs the threaded implementation of our server
+	 * Spawns three threads and waits for them to join
 	 * 
 	 * @return total time elapsed in nanoseconds
 	 * @throws UnknownHostException
@@ -67,26 +71,65 @@ public class BenchmarkClient {
 	 */
 	public static long MTServer() throws UnknownHostException, IOException{
 		long startTime = System.nanoTime();
-		for(int i = 0; i <= 1000; i++){	
-			Socket s = new Socket("localhost", 8888);
-			//System.out.println("Client is connected to the server");
-			
-			//Send the string to the server
-			PrintStream ps = new PrintStream(s.getOutputStream());
-			ps.println("caps lock is cruise control for cool.");
-			
-			//read back response
-			BufferedReader r = new BufferedReader(new InputStreamReader(
-					s.getInputStream()));
-			String line;
-			line = r.readLine();
-			System.out.println(line);
-				
-			
-			ps.close();
+		
+		//spawn three threads
+		ClientThread c1 = new ClientThread();
+		ClientThread c2 = new ClientThread();
+		ClientThread c3 = new ClientThread();
+		c1.start();
+		c2.start();
+		c3.start();
+		
+		//wait for threads to join
+		try{
+			c1.join();
+			c2.join();
+			c3.join();
+		}catch(InterruptedException e){
+			e.printStackTrace();
 		}
+		
+		
 		long endTime = System.nanoTime();
 		return (endTime - startTime);
 	}
+	
+	/**
+	 * Run method executes calls to the multithreaded server
+	 * @author Ian Mundy
+	 *
+	 */
+	private static class ClientThread extends Thread{
+		
+		public void run(){
+			try{
+				Socket s = new Socket("localhost", 8889);
+				PrintStream ps = new PrintStream(s.getOutputStream());
+				for(int i = 0; i <= 334; i++){	
+					
+					//System.out.println("Client is connected to the server");
+					
+					//Send the string to the server
+					
+					ps.println("caps lock is cruise control for cool.");
+					
+					//read back response
+					BufferedReader r = new BufferedReader(new InputStreamReader(
+							s.getInputStream()));
+					String line;
+					line = r.readLine();
+					System.out.println(line);
+						
+					
+					
+				}
+				ps.close();
+			}catch(IOException e){
+				e.printStackTrace();
+			}
+			
+		}
+	}
+	
 	
 }
